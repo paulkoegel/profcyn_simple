@@ -1,0 +1,52 @@
+Installation
+------------
+### Grunt
++ install node.js
++ install npm
++ `npm install -g grunt-cli`
++ `npm install`
+
++ `brew update` (earlier closure-compiler versions have a [bug](http://code.google.com/p/closure-compiler/issues/detail?id=215) that affects us; my working version: 'Built on: 2013/05/22 12:32')
++ `brew install closure-compiler`
++ set the path to the closure compiler.jar in an environment variable:
+  `set -xg CLOSURE_PATH /usr/local/opt/closure-compiler/libexec`
+
+### Compass
++ install Ruby 1.9.3 with RVM or rbenv
++ bundle install
+
+Development Setup
+-----------------
+
+### TL;DR
+Start the following three processes from the project's root folder:
+`grunt`
+`grunt server`
+`compass watch`
+
+### Watcher and Server Processes
+We're using two watchers since Grunt's a node process and when it calls native SASS/Compass, it has to start a Ruby environment every time a file changes, which takes a while and makes the whole watch process tediously slow. There is a SASS port to Javascript but none for Compass so far. An alternative might be to have Grunt load native SASS/Compass via [Zeus](https://github.com/burke/zeus), which preloads Ruby environments.
+The grunt server process could also be chained before `watch` in the Gruntfile (without keepalive set to true in connect's config then). I prefer two processes.
+
+### Grunt Watcher
+Monitors images, Javascript and HAML files for changes and compiles or copies them from `/source` to `/grunt_dev`.
+Configuration is in `Gruntfile.coffee`.
+Start with: `grunt`
+
+To manually trigger a build:
+`grunt build:dev --verbose`
+
+### Grunt Server
+`grunt server`
+
+### Compass Watcher
+Monitors only .sass files inside of `/source/stylesheets`, compiles them to .css and puts them in `/grunt_dev/stylesheets`.
+Configuration is in `config.rb`.
+Start with: `compass watch`
+
+
+Deployment
+----------
++ run `grunt build:prod`
++ register on 5apps.com
++ create a second git repository inside `/grunt_prod` and push it to 5apps.com

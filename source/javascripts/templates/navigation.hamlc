@@ -1,0 +1,5 @@
+%ul.m-navigation
+  %li.m-navigation--item
+    %a{href: '/'} Home
+  %li.m-navigation--item
+    %a{href:'/login'} Login

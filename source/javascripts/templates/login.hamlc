@@ -1,0 +1,6 @@
+%h1 Login
+
+%form.m-login
+  %input{name: 'email'}
+  %input{name: 'password', type: 'password'}
+  %input{type: 'submit'}

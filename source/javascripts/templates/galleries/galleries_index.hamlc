@@ -1,0 +1,2 @@
+%h1 Galleries
+  %ul#js-galleries-wrapper

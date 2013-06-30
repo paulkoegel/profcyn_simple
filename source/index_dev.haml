@@ -1,0 +1,20 @@
+!!!
+%html
+  %head
+    %base{href: '/'}
+    %title Professional Cynic
+    %meta{charset: 'utf-8'}
+    %meta{name: 'viewport', content: 'width=device-width, initial-scale=1.0, user-scalable=no'}
+    %meta{name:'HandheldFriendly', content: 'True'}
+    %script{type: 'text/javascript'}
+       window.BB = {} // our app's namespace
+
+    %link{rel: 'stylesheet', type: 'text/css', href: 'stylesheets/application.css'}
+
+    - for filePath in global.sourceFiles
+      - do (filePath) ->
+        != "<script src='#{filePath}' type='text/javascript'></script>"
+
+  %body
+    .l-content
+      .m-thumbnail-container
