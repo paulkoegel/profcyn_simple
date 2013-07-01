@@ -18,9 +18,10 @@ $ ->
   
   i = 0
   elementsPerRow = 4
-  # while i <= totalPhotos
-  #   randomOffsets = _(_.range(elementsPerRow)).shuffle().slice(0, 2)
-  #   console.log 'take:' + randomOffsets
-  #   $(".m-thumbnail-container .m-thumbnail:eq(#{i + randomOffsets[0]})").addClass('as-square')
-  #   $(".m-thumbnail-container .m-thumbnail:eq(#{i + randomOffsets[1]})").addClass('as-square')
-  #   i += elementsPerRow # there are always 5 photos per row
+
+  while i <= totalPhotos
+    randomOffsets = _(_.range(elementsPerRow)).shuffle().slice(0, 2)
+    console.log 'take:' + randomOffsets
+    $(".m-thumbnail-container .m-thumbnail:eq(#{i + randomOffsets[0]})").addClass('as-square')
+    $(".m-thumbnail-container .m-thumbnail:eq(#{i + randomOffsets[1]})").addClass('as-circle')
+    i += elementsPerRow # there are always 5 photos per row

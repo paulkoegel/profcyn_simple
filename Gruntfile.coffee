@@ -4,8 +4,8 @@
 # grunt-connect-rewrite
 rewriteRulesSnippet = require('grunt-connect-rewrite/lib/utils').rewriteRequest
 
-devTasks = ['set_global', 'clean:dev', 'copy:dev', 'haml:html', 'haml:haml_coffee', 'coffee:dev', 'markdown:dev', 'html_json_wrapper:dev', 'insert_json_to_dom:dev']
-prodTasks = ['clean:prod', 'copy:prod', 'haml:html', 'haml:haml_coffee', 'coffee:prod', 'markdown:prod', 'html_json_wrapper:prod', 'compass:prod', 'concat:prod', 'closure-compiler:prod', 'insert_json_to_dom:prod', 'cssmin:prod', 'cachebust', 'clean:prod_js']
+devTasks = ['set_dev_environment', 'set_global', 'clean:dev', 'copy:dev', 'haml:html', 'haml:haml_coffee', 'coffee:dev']
+prodTasks = ['set_prod_environment', 'clean:prod', 'copy:prod', 'haml:html', 'haml:haml_coffee', 'coffee:prod', 'markdown:prod', 'html_json_wrapper:prod', 'compass:prod', 'concat:prod', 'closure-compiler:prod', 'insert_json_to_dom:prod', 'cssmin:prod', 'cachebust', 'clean:prod_js']
 
 # can't use 'source/javascripts/**' for this as the loading sequence is important
 filesToLoad = (path) ->
@@ -125,7 +125,6 @@ module.exports = (grunt) ->
     haml:
       html:
         files:
-          'grunt_dev/index.html': 'source/index_dev.haml'
           'grunt_<%= environment %>/index.html': 'source/index_<%= environment %>.haml'
         options:
           target: 'html'
@@ -155,15 +154,32 @@ module.exports = (grunt) ->
         ext: '.js'
 
     watch:
-      dev:
-        files: [
-          './source/images/**',
-          './source/javascripts/**',
-          './source/content/**',
-          './source/index_dev.haml',
-          './Gruntfile.coffee'
-        ]
-        tasks: 'dev_wrapper'
+      options:
+        livereload: true
+        interrupt: true
+        debounceDelay: 250
+      scripts:
+        files: './source/javascripts/*.coffee'
+        tasks: ['watcher_bootstrap', 'coffee:dev']
+      templates:
+        files: './source/javascripts/templates/*.hamlc'
+        tasks: ['watcher_bootstrap', 'haml:haml_coffee']
+      haml:
+        files: './source/index_dev.haml'
+        tasks: ['watcher_bootstrap', 'haml:html']
+      images:
+        files: './source/images/**'
+        tasks: ['watcher_bootstrap', 'copy:dev']
+
+
+        # files: [
+        #   './source/images/**',
+        #   './source/javascripts/**',
+        #   './source/content/**',
+        #   './source/index_dev.haml',
+        #   './Gruntfile.coffee'
+        # ]
+        # tasks: devTasks
 
     markdown:
       dev:
@@ -284,17 +300,17 @@ module.exports = (grunt) ->
   grunt.loadTasks './tasks/'
 
   # this seems a silly way to set variables, but it works.
-  grunt.registerTask 'dev_wrapper', 'Set config vars first and then call all devTasks.', ->
+  grunt.registerTask 'set_dev_environment', 'Set config vars first and then call all devTasks.', ->
     grunt.config.set 'environment', 'dev'
-    grunt.task.run devTasks
+    #grunt.task.run devTasks
 
-  grunt.registerTask 'prod_wrapper', 'Set config vars first and then call all prodTasks.', ->
+  grunt.registerTask 'set_prod_environment', 'Set config vars first and then call all prodTasks.', ->
     grunt.config.set 'environment', 'prod'
-    grunt.task.run prodTasks
+    #grunt.task.run prodTasks
 
-  grunt.registerTask 'build:dev', 'dev_wrapper'
+  grunt.registerTask 'build:dev', devTasks #'dev_wrapper'
   grunt.registerTask 'build:prod', 'prod_wrapper'
-  grunt.registerTask 'default', ['watch:dev']
+  grunt.registerTask 'default', ['watch']
 
   # workaround with which we could call, e.g., grunt.file functions inside of HAML templates with `= global.grunt.file(...)`
   # not using this for now as the cachebusting task is more elegant and we have no further use for this; please keep for reference, though.
@@ -308,3 +324,6 @@ module.exports = (grunt) ->
       'configureRewriteRules'
       'connect:server'
     ]
+
+  grunt.registerTask 'watcher_bootstrap', (target) ->
+    grunt.task.run ['set_global', 'set_dev_environment', 'haml:html']
